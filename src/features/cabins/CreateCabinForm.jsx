@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
@@ -9,9 +10,14 @@ import { CreateCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
 
-function CreateCabinForm() {
+function CreateCabinForm({cabinToEdit = {}}) {
+  
+  const{id: editId, ...editValue } = cabinToEdit
 
-  const {register, handleSubmit, reset, getValues, formState} = useForm()
+  const isEditSession = Boolean(editId)
+  const {register, handleSubmit, reset, getValues, formState} = useForm({
+    defaultValues: isEditSession ? editValues : {},
+  })
   const {errors} = formState
   const queryClient = useQueryClient()
 
@@ -27,7 +33,7 @@ function CreateCabinForm() {
   })
 
   function onSubmit(data){
-    mutate(data);
+    mutate({...data, image: data.image[0]});
   }
 
   function onError(errors){
@@ -100,7 +106,10 @@ function CreateCabinForm() {
       </FormRow>
 
       <FormRow label="Cabin photo">
-        <FileInput id="image" accept="image/*" />
+        <FileInput id="image" accept="image/*"
+        {...register('image', {
+            required: "This field is required"
+            })}/>
       </FormRow>
 
       <FormRow>
